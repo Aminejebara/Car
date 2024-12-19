@@ -1,0 +1,148 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carpooling Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f4;
+            color: #333;
+            font-size: 16px;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .rides-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .rides-list ul {
+            list-style-type: none;
+        }
+
+        .ride-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .ride-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        strong {
+            color: #333;
+        }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .ride-card {
+                padding: 15px;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+<h1>Available Rides</h1>
+<div id="rides-list">Loading rides...</div>
+
+<script>
+    // Fonction pour récupérer les trajets via l'API
+    function fetchRides() {
+        fetch('http://localhost:8080/rides')  // Utilise l'URL correcte de l'API
+            .then(response => response.json())  // Convertir la réponse en JSON
+            .then(data => {
+                const ridesList = document.getElementById('rides-list');
+
+                // Si aucune donnée n'est retournée
+                if (data.length === 0) {
+                    ridesList.innerHTML = '<p>No rides available at the moment.</p>';
+                } else {
+                    // Créer une liste pour afficher les trajets
+                    const ul = document.createElement('ul');
+                    data.forEach(ride => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                                <p><strong>Departure:</strong> ${ride.startLocation}</p>
+                                <p><strong>Destination:</strong> ${ride.destination}</p>
+                                <p><strong>Departure Time:</strong> ${ride.departureTime}</p>
+                                <p><strong>Available Seats:</strong> ${ride.availableSeats}</p>
+                                <p><strong>Price per Seat:</strong> ${ride.pricePerSeat}</p>
+                            `;
+                        ul.appendChild(li);
+                    });
+                    ridesList.innerHTML = '';  // Vider le message de "loading"
+                    ridesList.appendChild(ul);  // Ajouter la liste des trajets
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching rides:', error);
+                document.getElementById('rides-list').innerHTML = '<p>Error loading rides.</p>';
+            });
+    }
+
+    // Appeler la fonction pour charger les trajets dès que la page est prête
+    window.onload = fetchRides;
+</script>
+</body>
+</html>
